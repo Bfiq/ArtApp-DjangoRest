@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Board
+from .models import Board, Pin
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -15,4 +15,9 @@ class UserSerializer(serializers.ModelSerializer):
 class BoardSerializer(serializers.ModelSerializer):
     class Meta:
         model = Board
+        fields = '__all__'
+
+class PinSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Pin
         fields = '__all__'
