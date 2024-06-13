@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
-from .models import Board
+from .models import Board, Pin
 from rest_framework.test import APIClient #Simulación de peticiones Http
 from rest_framework import status
 
@@ -47,4 +47,37 @@ class BoardTestCase(TestCase):
         self.assertEquals(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(Board.objects.filter(id=self.board.id).exists())
 
+class PintTestCase(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user = User.objects.create(username='test')
+        self.pin = Pin.objects.create(user=self.user, title='pinTest', description='descriptionTest', imageUrl='http://api/bucket/image.jpg')
+
+    def testGetPin(self):
+        response = self.client.get('/api/pins/')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(Pin.objects.count(), 1)
+        self.assertEqual(response.data[0]["title"], "pinTest")
+
+    def testPostPin(self):
+        response = self.client.post('/api/pins/', {
+            'user': self.user.id,
+            'title': 'test',
+            'description': 'test',
+            'imageUrl': 'https://test.jpg'
+        }, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Pin.objects.count(), 2)
+        self.assertEqual(Pin.objects.get(pk=2).title, "test")
+
+    def testUpdatePin(self):
+        response = self.client.patch(f'/api/pins/{self.pin.id}/', {
+            'description':'test patch'
+        }, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.pin.refresh_from_db()
+        self.assertEqual(Pin.objects.get(pk=1).description,"test patch")
 
