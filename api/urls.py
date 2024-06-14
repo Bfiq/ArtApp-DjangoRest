@@ -1,4 +1,4 @@
-from .views import UserRegistration, BoardsView, PinView, BoardPinView
+from .views import UserRegistration, BoardsView, PinView, BoardPinView, TagView
 from django.urls import path
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -15,4 +15,6 @@ urlpatterns = [
     path('pins/<int:pk>/', PinView.as_view(), name='pin-detail'),
     path('board-pin/', BoardPinView.as_view(), name='boards-Pins'),
     path('board-pin/<int:pk>/', BoardPinView.as_view(), name='boards-Pins-detail'),
+    path('tag/', TagView.as_view(), name='tags'),
+    path('tag/<int:pk>/', TagView.as_view(), name='tag-detail'),
 ]
