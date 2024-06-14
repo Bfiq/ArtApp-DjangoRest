@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
-from .models import Board, Pin
+from .models import Board, Pin, BoardPin
 from rest_framework.test import APIClient #Simulación de peticiones Http
 from rest_framework import status
 
@@ -81,3 +81,38 @@ class PintTestCase(TestCase):
         self.pin.refresh_from_db()
         self.assertEqual(Pin.objects.get(pk=1).description,"test patch")
 
+class BoardPinTestCase(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user = User.objects.create(username='test')
+        self.board = Board.objects.create(user=self.user, name='test', description='test')
+        self.pin = Pin.objects.create(user = self.user, title='test', description='test', imageUrl='http://api/bucket/image.jpg')
+        self.pin2 = Pin.objects.create(user = self.user, title='test2', description='test', imageUrl='http://api/bucket/image2.jpg')
+        self.pin3 = Pin.objects.create(user = self.user, title='test3', description='test', imageUrl='http://api/bucket/image3.jpg')
+        self.boardPin = BoardPin.objects.create(boardFk=self.board, pinFk= self.pin)
+
+    def testGetBoardPin(self):
+        response = self.client.get('/api/board-pin/')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['boardFk'], 1)
+
+    def testPostBoardPin(self):
+        response = self.client.post('/api/board-pin/', {
+            'boardFk' : 1,
+            'pinFk' : 2,
+        }, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(BoardPin.objects.get(pk=2).pinFk.id, 2)
+        self.assertEqual(BoardPin.objects.count(), 2)
+
+    def testPatchBoardPin(self):
+        response = self.client.patch(f'/api/board-pin/{self.boardPin.id}/', {
+            'pinFk' : 3,
+        }, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.boardPin.refresh_from_db()
+        self.assertEqual(BoardPin.objects.get(pk=self.boardPin.id).pinFk.id, 3)

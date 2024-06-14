@@ -81,7 +81,7 @@ class PinView(APIView):
 class BoardPinView(APIView):
     def get(self, request):
         boardPin = BoardPin.objects.all()
-        serializer = BoardSerializer(boardPin, many=True)
+        serializer = BoardPinSerializer(boardPin, many=True)
         return Response(serializer.data)
     
     def post(self, request):
