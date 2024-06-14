@@ -1,4 +1,4 @@
-from .serializers import UserSerializer, BoardSerializer, PinSerializer
+from .serializers import UserSerializer, BoardSerializer, PinSerializer, BoardPinSerializer
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -73,6 +73,35 @@ class PinView(APIView):
     def put(self, request, pk):
         pin = get_object_or_404(Pin, pk=pk)
         serializer = PinSerializer(pin, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    
+class BoardPinView(APIView):
+    def get(self, request):
+        boardPin = BoardPin.objects.all()
+        serializer = BoardSerializer(boardPin, many=True)
+        return Response(serializer.data)
+    
+    def post(self, request):
+        serializer = BoardPinSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(status=status.HTTP_201_CREATED)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    
+    def patch(self, request, pk):
+        boardPin = get_object_or_404(BoardPin, pk=pk)
+        serializer = BoardPinSerializer(boardPin, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    
+    def put(self, request, pk):
+        boardPin = get_object_or_404(BoardPin, pk=pk)
+        serializer = BoardPinSerializer(boardPin, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(status=status.HTTP_200_OK)
