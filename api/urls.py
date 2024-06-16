@@ -17,4 +17,6 @@ urlpatterns = [
     path('board-pin/<int:pk>/', BoardPinView.as_view(), name='boards-Pins-detail'),
     path('tag/', TagView.as_view(), name='tags'),
     path('tag/<int:pk>/', TagView.as_view(), name='tag-detail'),
+    path('pin-tag/', TagView.as_view(), name='pin-tag'),
+    path('pin-tag/<int:pk>/', TagView.as_view(), name='pin-tag-detail'),
 ]

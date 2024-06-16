@@ -1,10 +1,10 @@
-from .serializers import UserSerializer, BoardSerializer, PinSerializer, BoardPinSerializer, TagSerializer
+from .serializers import UserSerializer, BoardSerializer, PinSerializer, BoardPinSerializer, TagSerializer, PinTagSerializer
 from rest_framework import status, generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
-from .models import Board, Pin, BoardPin, Tag
+from .models import Board, Pin, BoardPin, Tag, PinTag
 
 # Create your views here.
 class UserRegistration(APIView):
@@ -111,3 +111,7 @@ class BoardPinView(APIView):
 class TagView(generics.ListCreateAPIView):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
+
+class PinTagView(generics.ListCreateAPIView):
+    queryset = PinTag.objects.all()
+    serializer_class = PinTagSerializer
