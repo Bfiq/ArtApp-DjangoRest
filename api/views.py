@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 from .models import Board, Pin, BoardPin, Tag, PinTag
+from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
 class UserRegistration(APIView):
@@ -16,6 +17,8 @@ class UserRegistration(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class BoardsView(APIView):
+    permission_classes=[IsAuthenticated]
+
     def get(self, request):
         boards = Board.objects.all()
         serializer = BoardSerializer(boards, many=True)
@@ -50,6 +53,8 @@ class BoardsView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class PinView(APIView):
+    permission_classes=[IsAuthenticated]
+
     def get(self, request):
         pins = Pin.objects.all()
         serializer = PinSerializer(pins, many=True)
@@ -79,6 +84,8 @@ class PinView(APIView):
         return Response(status=status.HTTP_400_BAD_REQUEST)
     
 class BoardPinView(APIView):
+    permission_classes=[IsAuthenticated]
+
     def get(self, request):
         boardPin = BoardPin.objects.all()
         serializer = BoardPinSerializer(boardPin, many=True)
@@ -109,9 +116,13 @@ class BoardPinView(APIView):
 
 #Creado por lista generica
 class TagView(generics.ListCreateAPIView):
+    permission_classes=[IsAuthenticated]
+    
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
 
 class PinTagView(generics.ListCreateAPIView):
+    permission_classes=[IsAuthenticated]
+    
     queryset = PinTag.objects.all()
     serializer_class = PinTagSerializer

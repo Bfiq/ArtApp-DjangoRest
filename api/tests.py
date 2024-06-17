@@ -1,13 +1,14 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
 from .models import Board, Pin, BoardPin
-from rest_framework.test import APIClient #Simulación de peticiones Http
+from rest_framework.test import APIClient, force_authenticate #Simulación de peticiones Http
 from rest_framework import status
 
 class BoardTestCase(TestCase):
     def setUp(self): #función para preparar y configurar el entorno de prueba
+        self.user = User.objects.create(username="TestUser", password="12345")
         self.client = APIClient() #cliente de pruebas
-        self.user = User.objects.create(username="TestUser")
+        self.client.force_authenticate(user=self.user)
         self.board = Board.objects.create(user=self.user, name="BoardTest", description="description test")
 
     #Testeando POST
@@ -17,6 +18,7 @@ class BoardTestCase(TestCase):
             "name": "Name Board Test Post",
             "description": "Description Board Test Post"
         })
+
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Board.objects.count(), 2)
@@ -49,7 +51,9 @@ class BoardTestCase(TestCase):
 
 class PintTestCase(TestCase):
     def setUp(self):
-        self.client = APIClient()
+        self.user = User.objects.create(username="TestUser", password="12345")
+        self.client = APIClient() #cliente de pruebas
+        self.client.force_authenticate(user=self.user)
         self.user = User.objects.create(username='test')
         self.pin = Pin.objects.create(user=self.user, title='pinTest', description='descriptionTest', imageUrl='http://api/bucket/image.jpg')
 
@@ -83,8 +87,9 @@ class PintTestCase(TestCase):
 
 class BoardPinTestCase(TestCase):
     def setUp(self):
-        self.client = APIClient()
-        self.user = User.objects.create(username='test')
+        self.user = User.objects.create(username="TestUser", password="12345")
+        self.client = APIClient() #cliente de pruebas
+        self.client.force_authenticate(user=self.user)
         self.board = Board.objects.create(user=self.user, name='test', description='test')
         self.pin = Pin.objects.create(user = self.user, title='test', description='test', imageUrl='http://api/bucket/image.jpg')
         self.pin2 = Pin.objects.create(user = self.user, title='test2', description='test', imageUrl='http://api/bucket/image2.jpg')
